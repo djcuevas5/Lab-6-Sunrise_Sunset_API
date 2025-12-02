@@ -393,123 +393,360 @@ header p {
 }
 
 /* Footer */
+/* Animated Sun/Moon Footer */
+/* Simple Animated Sun/Moon Footer */
+/* Sun to Moon Animated Footer */
 footer {
-    margin-top: 50px;
-    text-align: center;
-    padding: 30px;
-    background: rgba(20, 44, 44, 0.8);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    border: 1px solid rgba(151, 38, 39, 0.3);
+    margin-top: 60px;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, var(--base-2), var(--sea-3));
+    position: relative;
+    overflow: hidden;
+    border-top: 2px solid var(--red);
 }
 
 .footer-content {
-    max-width: 600px;
+    max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    z-index: 2;
 }
 
-footer a {
-    color: var(--sm-2);
-    text-decoration: none;
-    font-weight: 600;
-    transition: var(--transition);
+/* Sky background with day-night transition */
+.footer-sky {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(180deg, 
+        rgba(255, 140, 0, 0.1) 0%,
+        rgba(252, 237, 187, 0.05) 30%,
+        rgba(101, 83, 85, 0.1) 70%,
+        rgba(14, 54, 65, 0.3) 100%
+    );
+    z-index: 1;
+    animation: skyTransition 20s linear infinite;
 }
 
-footer a:hover {
-    color: var(--text-accent);
-    text-decoration: underline;
+/* Celestial container */
+.footer-celestial {
+    position: relative;
+    height: 150px;
+    margin: 0 auto;
+    width: 400px;
 }
 
-.footer-note {
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: var(--sm);
-    font-style: italic;
-}
-
-/* Error and Loading States */
-.error {
-    background: linear-gradient(45deg, var(--red), #972627);
-    color: var(--text-light);
-    padding: 30px;
-    border-radius: var(--radius);
-    margin: 20px 0;
-    text-align: center;
-    animation: shake 0.5s ease-in-out;
-    border: 1px solid var(--sm-2);
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
-}
-
-.loading {
-    text-align: center;
-    padding: 60px;
-    background: rgba(51, 94, 83, 0.8);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--red-2);
-}
-
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(226, 181, 154, 0.3);
-    border-top: 5px solid var(--red);
+/* Celestial body - starts as sun, becomes moon */
+.celestial-body {
+    position: absolute;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    animation: 
+        celestialJourney 20s linear infinite,
+        celestialTransform 20s linear infinite;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* Sun state */
+.celestial-body::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff, #FFD700 40%, #FF8C00 70%);
+    box-shadow: 
+        0 0 40px 20px rgba(255, 215, 0, 0.4),
+        0 0 80px 40px rgba(255, 140, 0, 0.3);
+    animation: sunPulse 3s ease-in-out infinite;
+    opacity: 1;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2.2rem;
+/* Moon state */
+.celestial-body::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 70% 30%, #f0f0f0, #c0c0c0 40%, #808080 70%);
+    box-shadow: 
+        0 0 30px 15px rgba(240, 240, 240, 0.3),
+        0 0 60px 30px rgba(192, 192, 192, 0.2);
+    animation: moonGlow 4s ease-in-out infinite;
+    opacity: 0;
+}
+
+/* Moon craters */
+.celestial-body .moon-crater {
+    position: absolute;
+    background: rgba(128, 128, 128, 0.5);
+    border-radius: 50%;
+    z-index: 4;
+}
+
+.celestial-body .crater-1 {
+    width: 12px;
+    height: 12px;
+    top: 20px;
+    left: 15px;
+}
+
+.celestial-body .crater-2 {
+    width: 8px;
+    height: 8px;
+    top: 35px;
+    left: 30px;
+}
+
+.celestial-body .crater-3 {
+    width: 6px;
+    height: 6px;
+    top: 15px;
+    left: 40px;
+}
+
+/* Sun rays (only visible during day) */
+.sun-rays {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: 
+        rotateRays 10s linear infinite,
+        raysFade 20s linear infinite;
+}
+
+.sun-rays::before,
+.sun-rays::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 215, 0, 0.2);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: raysFade 20s linear infinite;
+}
+
+.sun-rays::before {
+    width: 110px;
+    height: 110px;
+}
+
+.sun-rays::after {
+    width: 130px;
+    height: 130px;
+    border-color: rgba(255, 140, 0, 0.1);
+}
+
+/* Stars - appear at night */
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    animation: starsFade 20s linear infinite;
+}
+
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s infinite;
+}
+
+.star:nth-child(1) { top: 20%; left: 10%; width: 2px; height: 2px; }
+.star:nth-child(2) { top: 30%; left: 25%; width: 3px; height: 3px; animation-delay: 0.5s; }
+.star:nth-child(3) { top: 15%; left: 50%; width: 2px; height: 2px; animation-delay: 1s; }
+.star:nth-child(4) { top: 40%; left: 70%; width: 3px; height: 3px; animation-delay: 1.5s; }
+.star:nth-child(5) { top: 25%; left: 85%; width: 2px; height: 2px; animation-delay: 2s; }
+.star:nth-child(6) { top: 10%; left: 60%; width: 2px; height: 2px; animation-delay: 2.5s; }
+.star:nth-child(7) { top: 35%; left: 40%; width: 3px; height: 3px; animation-delay: 3s; }
+
+/* Keyframe Animations */
+
+/* Celestial body moves across sky in parabolic arc */
+@keyframes celestialJourney {
+    0% {
+        left: 0%;
+        top: 80%;
     }
-    
-    .controls {
-        padding: 20px;
+    25% {
+        left: 25%;
+        top: 50%;
     }
-    
-    .day-card {
-        padding: 20px;
+    50% {
+        left: 50%;
+        top: 30%;
     }
-    
-    .data-grid {
-        grid-template-columns: 1fr;
+    75% {
+        left: 75%;
+        top: 50%;
     }
-    
-    .timezone-info {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
+    100% {
+        left: 100%;
+        top: 80%;
     }
 }
 
-@media (max-width: 480px) {
-    body {
-        padding: 10px;
+/* Transform from sun to moon during journey */
+@keyframes celestialTransform {
+    0%, 40% {
+        /* Sun visible, moon hidden */
     }
     
-    header {
-        padding: 25px 15px;
+    60%, 100% {
+        /* Moon visible, sun hidden */
     }
-    
-    h1 {
-        font-size: 1.8rem;
+}
+
+/* Sun pulses during day */
+@keyframes sunPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 40px 20px rgba(255, 215, 0, 0.4),
+            0 0 80px 40px rgba(255, 140, 0, 0.3);
     }
-    
-    .btn-primary {
-        padding: 15px;
-        width: 100%;
+    50% {
+        box-shadow: 
+            0 0 50px 25px rgba(255, 215, 0, 0.5),
+            0 0 100px 50px rgba(255, 140, 0, 0.4);
+    }
+}
+
+/* Moon glows during night */
+@keyframes moonGlow {
+    0%, 100% {
+        box-shadow: 
+            0 0 30px 15px rgba(240, 240, 240, 0.3),
+            0 0 60px 30px rgba(192, 192, 192, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 0 40px 20px rgba(240, 240, 240, 0.4),
+            0 0 80px 40px rgba(192, 192, 192, 0.3);
+    }
+}
+
+/* Sun rays rotate and fade */
+@keyframes rotateRays {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes raysFade {
+    0%, 40% {
+        opacity: 1;
+    }
+    60%, 100% {
+        opacity: 0;
+    }
+}
+
+/* Sky color transition */
+@keyframes skyTransition {
+    0%, 40% {
+        /* Day sky colors */
+        background: linear-gradient(180deg, 
+            rgba(255, 140, 0, 0.15) 0%,
+            rgba(252, 237, 187, 0.1) 30%,
+            rgba(101, 83, 85, 0.15) 70%,
+            rgba(14, 54, 65, 0.25) 100%
+        );
+    }
+    60%, 100% {
+        /* Night sky colors */
+        background: linear-gradient(180deg, 
+            rgba(14, 54, 65, 0.4) 0%,
+            rgba(9, 17, 64, 0.3) 30%,
+            rgba(1, 7, 43, 0.4) 70%,
+            rgba(0, 0, 0, 0.5) 100%
+        );
+    }
+}
+
+/* Stars fade in at night */
+@keyframes starsFade {
+    0%, 40% {
+        opacity: 0;
+    }
+    60%, 100% {
+        opacity: 0.8;
+    }
+}
+
+/* Stars twinkle */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+/* Optional: Add clouds for day */
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: cloudsMove 30s linear infinite;
+    opacity: 0;
+}
+
+.cloud-1 {
+    width: 40px;
+    height: 20px;
+    top: 30%;
+    left: 10%;
+    animation-delay: 0s;
+    animation: 
+        cloudsMove 30s linear infinite,
+        cloudsFade 20s linear infinite;
+}
+
+.cloud-2 {
+    width: 60px;
+    height: 30px;
+    top: 20%;
+    left: 40%;
+    animation-delay: 5s;
+    animation: 
+        cloudsMove 40s linear infinite,
+        cloudsFade 20s linear infinite;
+}
+
+.cloud-3 {
+    width: 50px;
+    height: 25px;
+    top: 40%;
+    left: 70%;
+    animation-delay: 10s;
+    animation: 
+        cloudsMove 35s linear infinite,
+        cloudsFade 20s linear infinite;
+}
+
+@keyframes cloudsMove {
+    0% { transform: translateX(-50px); }
+    100% { transform: translateX(450px); }
+}
+
+@keyframes cloudsFade {
+    0%, 40% {
+        opacity: 0.3;
+    }
+    60%, 100% {
+        opacity: 0;
     }
 }
 

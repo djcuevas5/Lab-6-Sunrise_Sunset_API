@@ -1,19 +1,14 @@
-// script.js - Sunrise Sunset Dashboard
-
-// DOM Elements
 const locationSelect = document.getElementById('location');
 const getDataBtn = document.getElementById('get-data');
 const resultsContainer = document.getElementById('results');
 
-// Format time to readable format
+
 function formatTime(dateTimeString) {
     if (!dateTimeString || dateTimeString === 'N/A') return 'N/A';
     try {
-        // The API returns times like "7:15:18 AM" or "7:15 AM"
-        // Remove seconds if present
+   
         let timeStr = dateTimeString;
         
-        // Remove seconds (":SS" pattern)
         timeStr = timeStr.replace(/:\d{2}(?=\s*[AP]M)/, '');
         
         // Ensure consistent format
@@ -31,7 +26,6 @@ function formatDayLength(dayLengthString) {
     console.log('Day length raw:', dayLengthString); // Debug log
     
     try {
-        // Already in correct format "Xh Ym"
         if (dayLengthString.includes('h') && dayLengthString.includes('m')) {
             return dayLengthString;
         }
@@ -42,7 +36,6 @@ function formatDayLength(dayLengthString) {
             return `${parseInt(hours)}h ${parseInt(minutes)}m`;
         }
         
-        // If it's a number (seconds)
         const seconds = parseInt(dayLengthString);
         if (!isNaN(seconds)) {
             const hours = Math.floor(seconds / 3600);
@@ -204,6 +197,7 @@ async function fetchSunData(lat, lng) {
     }
 }
 
+
 // Main event handler
 async function handleGetData() {
     const selectedValue = locationSelect.value;
@@ -247,6 +241,7 @@ async function handleGetData() {
         getDataBtn.textContent = 'Get Sunrise/Sunset Times';
     }
 }
+
 
 // Event Listeners
 getDataBtn.addEventListener('click', handleGetData);

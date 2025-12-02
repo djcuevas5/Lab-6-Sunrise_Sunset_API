@@ -1,61 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sunrise Sunset Dashboard</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Sunset Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
     <body>
-        <header>
-            <h1>🌅 Sunrise Sunset Dashboard</h1>
-            <p>Check sunrise and sunset times for cities around the world</p>
-        </header>
+    <header>
+        <h1>🌅 Sunrise/Sunset Dashboard</h1>
+        <p>Check sunrise and sunset times for cities around the world</p>
+    </header>
 
-        <main>
-            <section class="controls">
-                <div class="location-selector">
-                    <label for="location"><strong>Select a City</strong></label>
-                    <select id="location">
-                        <option value="">Choose a city</option>
-                        <option value="40.7128,-74.0060">New York, USA</option>
-                        <option value="51.5074,-0.1278">London, UK</option>
-                        <option value="35.6762,139.6503">Tokyo, Japan</option>
-                        <option value="-33.8688,151.2093">Sydney, Australia</option>
-                        <option value="30.0444,31.2357">Cairo, Egypt</option>
-                        <option value="48.8566,2.3522">Paris, France</option>
-                        <option value="25.2048,55.2708">Dubai, UAE</option>
-                        <option value="14.5995,120.9842">Manila, Philippines</option>
-                        <option value="34.0522,-118.2437">Los Angeles, USA</option>
-                        <option value="13.7563,100.5018">Bangkok, Thailand</option>
-                    </select>
-                </div>
-
-                <button id="get-data" class="btn-primary">
-                    Get Sunrise/Sunset Times
-                </button>
-            </section>
-            
-            <div class="divider"></div>
-            <section id="results" class="results-container">
-                <div class="placeholder">
-                    <div class="placeholder-icon">📍</div>
-                    <h2>Select a city above</h2>
-                    <p>Chosose a city from the dropdown to display sunrise and sunset</p>
-
-                    <div class="placeholder-grid">
-                        <div class="placeholder-card"></div>
-                        <div class="placeholder-card"></div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <div class="footer-content">
-                <p>Data provided by <a href="https://sunrisesunset.io/api/" target="_blank">Sunrise Sunset API</a></p>
+    <main>
+        <section class="controls">
+            <div class="location-selector">
+                <label for="location"><strong>Select a City</strong></label>
+                <select id="location">
+                    <option value="">Choose a city</option>
+                    <option value="40.7128,-74.0060">New York, USA</option>
+                    <option value="51.5074,-0.1278">London, UK</option>
+                    <option value="35.6762,139.6503">Tokyo, Japan</option>
+                    <option value="-33.8688,151.2093">Sydney, Australia</option>
+                    <option value="30.0444,31.2357">Cairo, Egypt</option>
+                    <option value="48.8566,2.3522">Paris, France</option>
+                    <option value="25.2048,55.2708">Dubai, UAE</option>
+                    <option value="14.5995,120.9842">Manila, Philippines</option>
+                    <option value="34.0522,-118.2437">Los Angeles, USA</option>
+                    <option value="13.7563,100.5018">Bangkok, Thailand</option>
+                </select>
             </div>
-        </footer>
-        <script src="script.js"></script>
+
+            <button id="get-data" class="btn-primary">
+                Get Sunrise/Sunset Times
+            </button>
+        </section>
+        
+        <div class="divider"></div>
+        <section id="results" class="results-container">
+            <div class="placeholder">
+                <div class="placeholder-icon">📍</div>
+                <h2>Select a city above</h2>
+                <p>Choose a city from the dropdown to display sunrise and sunset</p>
+
+                <div class="placeholder-grid">
+                    <div class="placeholder-card"></div>
+                    <div class="placeholder-card"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-sky"></div>
+        
+        <div class="stars">
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+        </div>
+        
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        
+        <div class="footer-content">
+            <div class="footer-celestial">
+                <div class="celestial-body">
+                    <div class="sun-rays"></div>
+                    <div class="moon-crater crater-1"></div>
+                    <div class="moon-crater crater-2"></div>
+                    <div class="moon-crater crater-3"></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="script.js"></script>
     </body>
 </html>
