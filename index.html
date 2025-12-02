@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sunrise Sunset Dashboard</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <header>
+            <h1>🌅 Sunrise Sunset Dashboard</h1>
+            <p>Check sunrise and sunset times for cities around the world</p>
+        </header>
+
+        <main>
+            <section class="controls">
+                <div class="location-selector">
+                    <label for="location"><strong>Select a City</strong></label>
+                    <select id="location">
+                        <option value="new_york">New York, USA</option>
+                        <option value="london">London, UK</option>
+                        <option value="tokyo">Tokyo, Japan</option>
+                        <option value="sydney">Sydney, Australia</option>
+                        <option value="cairo">Cairo, Egypt</option>
+                        <option value="paris">Paris, France</option>
+                        <option value="dubai`">Dubai, UAE</option>
+                        <option value="manila">Manila, Philippines</option>
+                        <option value="los_angeles">Los Angeles, USA</option>
+                        <option value="bangkok">Bangkok, Thailand</option>
+                    </select>
+                </div>
+
+                <button id="get-data" class="btn-primary">
+                    Get Sunrise/Sunset Times
+                </button>
+            </section>
+            
+            <div class="divider"></div>
+            <section id="results" class="result-container">
+                <div class="placeholder">
+                    <div class="placeholder-icon">📍</div>
+                    <h2>Select a city above</h2>
+                    <p>Chosose a city from the dropdown to display sunrise and sunset</p>
+
+                    <div class="placeholder-grid">
+                        <div class="placeholder-card"></div>
+                        <div class="placeholder-card"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>Data provided by <a href="https://sunrisesunset.io/api/" target="_blank">Sunrise Sunset API</a></p>
+            </div>
+        </footer>
+        <script src="script.js"></script>
+    </body>
+</html>
