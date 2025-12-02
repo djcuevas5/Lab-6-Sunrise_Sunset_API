@@ -7,25 +7,55 @@ const resultsContainer = document.getElementById('results');
 
 // Format time to readable format
 function formatTime(dateTimeString) {
-    if (!dateTimeString) return 'N/A';
+    if (!dateTimeString || dateTimeString === 'N/A') return 'N/A';
     try {
-        const date = new Date(dateTimeString);
-        return date.toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            timeZone: 'UTC' // API returns UTC times
-        });
+        // The API returns times like "7:15:18 AM" or "7:15 AM"
+        // Remove seconds if present
+        let timeStr = dateTimeString;
+        
+        // Remove seconds (":SS" pattern)
+        timeStr = timeStr.replace(/:\d{2}(?=\s*[AP]M)/, '');
+        
+        // Ensure consistent format
+        return timeStr;
     } catch (error) {
-        return dateTimeString; // Return as-is if parsing fails
+        console.error('Error formatting time:', error);
+        return dateTimeString;
     }
 }
 
-// Format day length to hours and minutes
-function formatDayLength(seconds) {
-    if (!seconds) return 'N/A';
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
+// Format day length (API returns string like "13h 17m" or "13:17")
+function formatDayLength(dayLengthString) {
+    if (!dayLengthString || dayLengthString === 'N/A') return 'N/A';
+    
+    console.log('Day length raw:', dayLengthString); // Debug log
+    
+    try {
+        // Already in correct format "Xh Ym"
+        if (dayLengthString.includes('h') && dayLengthString.includes('m')) {
+            return dayLengthString;
+        }
+        
+        // Format "HH:MM"
+        if (dayLengthString.includes(':')) {
+            const [hours, minutes] = dayLengthString.split(':');
+            return `${parseInt(hours)}h ${parseInt(minutes)}m`;
+        }
+        
+        // If it's a number (seconds)
+        const seconds = parseInt(dayLengthString);
+        if (!isNaN(seconds)) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+        
+        return dayLengthString;
+        
+    } catch (error) {
+        console.error('Error formatting day length:', error);
+        return dayLengthString || 'N/A';
+    }
 }
 
 // Show loading state
@@ -39,7 +69,7 @@ function showLoading() {
     `;
 }
 
-// Show error message
+// Show error message if issue occurs fethcing the data
 function showError(message) {
     resultsContainer.innerHTML = `
         <div class="error">
@@ -54,13 +84,16 @@ function showError(message) {
 function displayData(data, locationName) {
     const results = data.results;
     
+    console.log('Raw API results:', results);
+    console.log('Day length from API:', results.day_length);
+    console.log('Type of day_length:', typeof results.day_length);
+    
     resultsContainer.innerHTML = `
         <h2 style="text-align: center; margin-bottom: 30px; color: var(--text-accent);">
             📍 ${locationName}
         </h2>
         
         <div class="results-grid">
-            <!-- Today's Data -->
             <div class="day-card today">
                 <h3>Today</h3>
                 <div class="data-grid">
@@ -91,7 +124,6 @@ function displayData(data, locationName) {
                 </div>
             </div>
             
-            <!-- Tomorrow's Data -->
             <div class="day-card tomorrow">
                 <h3>Tomorrow</h3>
                 <div class="data-grid">
@@ -123,7 +155,6 @@ function displayData(data, locationName) {
             </div>
         </div>
         
-        <!-- Time Zone Info -->
         <div class="timezone-info">
             <div class="label">
                 <span>⏰ Time Zone</span>
@@ -141,20 +172,25 @@ function displayData(data, locationName) {
 
 // Fetch sunrise/sunset data from API
 async function fetchSunData(lat, lng) {
-    // Note: The API might return today's data only. For tomorrow's data,
-    // we might need to make another call or calculate it.
-    // For now, we'll display the same data for both days.
+    const apiUrl1 = `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}`;
+    const apiUrl2 = `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}&formatted=0`;
+    
+    console.log('Trying API URL 1:', apiUrl1);
     
     try {
-        const response = await fetch(
-            `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}&formatted=0&date=today`
-        );
+        let response = await fetch(apiUrl1);
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            console.log('Trying API URL 2:', apiUrl2);
+            response = await fetch(apiUrl2);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
         }
         
         const data = await response.json();
+        console.log('Full API Response:', data);
         
         if (data.status !== 'OK') {
             throw new Error(data.status || 'Unknown API error');
@@ -180,7 +216,6 @@ async function handleGetData() {
     const [lat, lng] = selectedValue.split(',');
     const locationName = locationSelect.options[locationSelect.selectedIndex].text;
     
-    // Show loading state
     showLoading();
     
     try {
@@ -197,7 +232,6 @@ async function handleGetData() {
     } catch (error) {
         console.error('Error:', error);
         
-        // Show appropriate error message
         if (error.message.includes('Failed to fetch')) {
             showError('Network error. Please check your internet connection.');
         } else if (error.message.includes('OVER_QUERY_LIMIT')) {
@@ -209,7 +243,6 @@ async function handleGetData() {
         }
         
     } finally {
-        // Re-enable button
         getDataBtn.disabled = false;
         getDataBtn.textContent = 'Get Sunrise/Sunset Times';
     }
@@ -218,25 +251,13 @@ async function handleGetData() {
 // Event Listeners
 getDataBtn.addEventListener('click', handleGetData);
 
-// Also allow Enter key to trigger search
-locationSelect.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        handleGetData();
-    }
-});
-
-// Optional: Auto-load data for first location on page load
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    // You can enable this if you want to auto-load data on page load
-    // locationSelect.value = locationSelect.options[1].value; // Select first city
-    // handleGetData();
-    
-    // Or just set a welcome message
     resultsContainer.innerHTML = `
         <div class="placeholder">
             <div class="placeholder-icon">🌅</div>
             <h2>Welcome to Sunrise Sunset Dashboard</h2>
-            <p>Select a city from the dropdown above to view sunrise and sunset times, dawn, dusk, day length, and solar noon for both today and tomorrow.</p>
+            <p>Choose a city from the dropdown above to view sunrise and sunset times, dawn, dusk, day length, and solar noon for both today and tomorrow.</p>
             <div class="placeholder-grid">
                 <div class="placeholder-card"></div>
                 <div class="placeholder-card"></div>
@@ -246,54 +267,10 @@ document.addEventListener('DOMContentLoaded', () => {
             </p>
         </div>
     `;
+    
+    // Quick API test
+    fetch('https://api.sunrisesunset.io/json?lat=40.7128&lng=-74.0060')
+        .then(r => r.json())
+        .then(d => console.log('API Test - Day length format:', d.results.day_length))
+        .catch(e => console.error('API test failed:', e));
 });
-
-// Optional: Add keyboard navigation to select dropdown
-locationSelect.addEventListener('focus', () => {
-    locationSelect.style.outline = '2px solid var(--text-accent)';
-    locationSelect.style.outlineOffset = '2px';
-});
-
-locationSelect.addEventListener('blur', () => {
-    locationSelect.style.outline = 'none';
-});
-
-// Helper function to get tomorrow's date (if needed for future API calls)
-function getTomorrowDate() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0]; // Returns YYYY-MM-DD
-}
-
-// Note about tomorrow's data:
-// The current implementation shows the same data for today and tomorrow.
-// To get actual tomorrow's data, you would need to make a separate API call:
-// Example: https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}&formatted=0&date=tomorrow
-// Or use the date parameter with tomorrow's date
-
-// If you want to fetch both today and tomorrow's data, you could modify the function:
-async function fetchTodayAndTomorrowData(lat, lng) {
-    try {
-        // Fetch today's data
-        const todayResponse = await fetch(
-            `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}&formatted=0&date=today`
-        );
-        const todayData = await todayResponse.json();
-        
-        // Fetch tomorrow's data
-        const tomorrow = getTomorrowDate();
-        const tomorrowResponse = await fetch(
-            `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}&formatted=0&date=${tomorrow}`
-        );
-        const tomorrowData = await tomorrowResponse.json();
-        
-        return {
-            today: todayData.results,
-            tomorrow: tomorrowData.results,
-            timezone: todayData.results.timezone
-        };
-        
-    } catch (error) {
-        throw error;
-    }
-}
